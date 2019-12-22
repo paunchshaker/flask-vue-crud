@@ -1,7 +1,8 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Ping from '../components/Ping.vue';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: 'history',
@@ -11,8 +12,8 @@ const router = new VueRouter({
       path: '/ping',
       name: 'Ping',
       component: Ping,
-    }
+    },
   ],
-})
+});
 
-export default router
+export default router;
