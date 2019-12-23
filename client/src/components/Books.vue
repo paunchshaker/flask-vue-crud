@@ -5,9 +5,9 @@
         <h1>Books</h1>
         <hr><br><br>
         <alert :message="message" v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.book-modal>Add Book</button>
+        <v-btn depressed color="success" @click.stop="addBookModal = true">Add Book</v-btn>
         <br><br>
-        <table class="table table-hover">
+        <v-simple-table>
           <thead>
             <tr>
               <th scope="col">Title</th>
@@ -25,97 +25,82 @@
                 <span v-else>No</span>
               </td>
               <td>
-                <div class="btn-group" role="group">
-                  <button
-                    type="button"
-                    class="btn btn-warning btn-sm"
-                    v-b-modal.book-update-modal
+                <v-container>
+                  <v-btn
+                    x-small depressed
+                    color="warning"
                     @click="editBook(book)">
                     Update
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-danger btn-sm"
+                  </v-btn>
+                  <v-btn
+                    x-small depressed
+                    color="error"
                     @click="onDeleteBook(book)">
                     Delete
-                  </button>
-                </div>
+                  </v-btn>
+                </v-container>
               </td>
             </tr>
           </tbody>
-        </table>
+        </v-simple-table>
       </div>
     </div>
-    <b-modal ref="addBookModal"
-             id="book-modal"
-             title="Add a new book"
-             hide-footer>
-      <b-form @submit="onSubmit" @reset="onReset" class="w-100">
-        <b-form-group id="form-title-group"
-                      label="Title:"
-                      label-for="form-title-input">
-          <b-form-input id="form-title-input"
-                        type="text"
-                        v-model="addBookForm.title"
-                        required
-                        placeholder="Enter title">
-          </b-form-input>
-        </b-form-group>
-        <b-form-group id="form-author-group"
-                      label="Author:"
-                      label-for="form-author-input">
-          <b-form-input id="form-author-input"
-                        type="text"
-                        v-model="addBookForm.author"
-                        required
-                        placeholder="Enter auhor">
-          </b-form-input>
-        </b-form-group>
-        <b-form-group id="form-read-group">
-          <b-form-checkbox-group v-model="addBookForm.read" id="form-checks">
-            <b-form-checkbox value="true">Read?</b-form-checkbox>
-          </b-form-checkbox-group>
-        </b-form-group>
-        <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
-      </b-form>
-    </b-modal>
-  <b-modal ref="editBookModal"
-           id="book-update-modal"
-           title="Update"
-           hide-footer>
-    <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
-    <b-form-group id="form-title-edit-group"
-                  label="Title:"
-                  label-for="form-title-edit-input">
-        <b-form-input id="form-title-edit-input"
-                      type="text"
-                      v-model="editForm.title"
-                      required
-                      placeholder="Enter title">
-        </b-form-input>
-      </b-form-group>
-      <b-form-group id="form-author-edit-group"
-                    label="Author:"
-                    label-for="form-author-edit-input">
-          <b-form-input id="form-author-edit-input"
-                        type="text"
-                        v-model="editForm.author"
-                        required
-                        placeholder="Enter author">
-          </b-form-input>
-        </b-form-group>
-      <b-form-group id="form-read-edit-group">
-        <b-form-checkbox-group v-model="editForm.read" id="form-checks">
-          <b-form-checkbox value="true">Read?</b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-      <b-button-group>
-        <b-button type="submit" variant="primary">Update</b-button>
-        <b-button type="reset" variant="danger">Cancel</b-button>
-      </b-button-group>
-    </b-form>
-  </b-modal>
+    <v-dialog persistent v-model="addBookModal">
+      <v-card>
+        <v-card-title class="headline">Add Book</v-card-title>
+          <v-card-text>
+          <v-form @submit="onSubmit" @reset="onReset">
+            <v-text-field
+              v-model="addBookForm.title"
+              label="Title:"
+              placeholder="Enter title"
+              required>
+            </v-text-field>
+            <v-text-field
+              v-model="addBookForm.author"
+              label="Author:"
+              placeholder="Enter author"
+              required>
+            </v-text-field>
+            <v-checkbox
+              v-model="addBookForm.read"
+              label="Read?"
+              >
+            </v-checkbox>
+            <v-btn type="submit" color="primary">Submit</v-btn>
+            <v-btn type="reset" color="error">Reset</v-btn>
+          </v-form>
+          </v-card-text>
+        </v-card>
+    </v-dialog>
+  <v-dialog persistent v-model="editBookModal">
+      <v-card>
+        <v-card-title class="headline">Update Book</v-card-title>
+          <v-card-text>
+            <v-form @submit="onSubmitUpdate" @reset="onResetUpdate">
+            <v-text-field
+              v-model="editForm.title"
+              label="Title:"
+              placeholder="Enter title"
+              required>
+            </v-text-field>
+            <v-text-field
+              v-model="editForm.author"
+              label="Author:"
+              placeholder="Enter author"
+              required>
+            </v-text-field>
+            <v-checkbox
+              v-model="editForm.read"
+              label="Read?"
+              >
+            </v-checkbox>
+            <v-btn type="submit" color="primary">Update</v-btn>
+            <v-btn type="reset" color="error">Cancel</v-btn>
+          </v-form>
+          </v-card-text>
+        </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -127,16 +112,18 @@ export default {
   data() {
     return {
       books: [],
+      addBookModal: false,
       addBookForm: {
         title: '',
         author: '',
-        read: [],
+        read: false,
       },
+      editBookModal: false,
       editForm: {
         id: '',
         title: '',
         author: '',
-        read: [],
+        read: false,
       },
       message: '',
       showMessage: false,
@@ -173,6 +160,7 @@ export default {
     },
     editBook(book) {
       this.editForm = book;
+      this.editBookModal = true;
     },
     updateBook(payload, bookID) {
       const path = `http://localhost:5000/books/${bookID}`;
@@ -191,45 +179,41 @@ export default {
     initForm() {
       this.addBookForm.title = '';
       this.addBookForm.author = '';
-      this.addBookForm.read = [];
+      this.addBookForm.read = false;
       this.editForm.id = '';
       this.editForm.title = '';
       this.editForm.author = '';
-      this.editForm.read = [];
+      this.editForm.read = false;
     },
     onSubmit(evt) {
       evt.preventDefault();
-      this.$refs.addBookModal.hide();
-      let read = false;
-      if (this.addBookForm.read[0]) read = true;
+      this.addBookModal = false;
       const payload = {
         title: this.addBookForm.title,
         author: this.addBookForm.author,
-        read, // property shorthand
+        read: this.addBookForm.read, // property shorthand
       };
       this.addBook(payload);
       this.initForm();
     },
     onReset(evt) {
       evt.preventDefault();
-      this.$refs.addBookModal.hide();
+      this.addBookModal = false;
       this.initForm();
     },
     onSubmitUpdate(evt) {
       evt.preventDefault();
-      this.$refs.editBookModal.hide();
-      let read = false;
-      if (this.editForm.read[0]) read = true;
+      this.editBookModal = false;
       const payload = {
         title: this.editForm.title,
         author: this.editForm.author,
-        read,
+        read: this.editForm.read,
       };
       this.updateBook(payload, this.editForm.id);
     },
     onResetUpdate(evt) {
       evt.preventDefault();
-      this.$refs.editBookModal.hide();
+      this.editBookModal = false;
       this.initForm();
       this.getBooks();
     },
